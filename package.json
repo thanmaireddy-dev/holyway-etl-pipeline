@@ -1,0 +1,22 @@
+{
+  "name": "holyway-data-pipeline",
+  "version": "1.0.0",
+  "description": "Data Engineering / ETL pipeline for the HolyWay church-domain dataset. Extracts raw data from Firebase Firestore.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "extract": "node scripts/etl/extractFirestore.mjs"
+  },
+  "keywords": [
+    "data-engineering",
+    "etl",
+    "firestore",
+    "churches"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "firebase": "^11.6.0"
+  }
+}

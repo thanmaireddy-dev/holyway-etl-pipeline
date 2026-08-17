@@ -1,0 +1,18 @@
+# Environment variables (contains Firebase credentials)
+.env
+
+# Raw extracted data (local development artifacts)
+raw/
+
+# Node.js dependencies
+node_modules/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
