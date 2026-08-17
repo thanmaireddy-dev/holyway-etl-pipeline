@@ -14,38 +14,30 @@ pattern:
 |---|---|---|
 | **Extract** | Read raw church data from Firestore | ✅ Done |
 | **Transform** | Clean, validate, and reshape into analytics-friendly datasets | ✅ Done |
-| **Load** | Load processed datasets into Amazon S3 | ⬜ Next |
+| **Load** | Load processed datasets into Amazon S3 | ✅ Done |
 
 ## Current Architecture
 
 ```
-Firestore (holy-way-9800e)
+Firebase Firestore (holy-way-9800e)
         ↓
-  Step 1: Node.js extraction script
+  Step 1: Extract (Node.js)
         ↓
   Raw JSON snapshot (local)
         ↓
-  Step 2: Python + Pandas transformation
+  Step 2: Transform + Validate (Python + Pandas)
         ↓
   Processed CSV datasets (local)
         ↓
-  [Next: Amazon S3]
+  Step 3: Load → Amazon S3 (ap-south-2, Hyderabad)
+        ↓
+  [Next: AWS Glue Data Catalog]
+        ↓
+  [Later: Amazon Athena → SQL Analytics]
 ```
 
-### Planned Architecture (not yet implemented)
-
-```
-Firestore → Extract → Raw JSON → Transform / Validate → Amazon S3
-                                                            ↓
-                                                   AWS Glue Data Catalog
-                                                            ↓
-                                                      Amazon Athena
-                                                            ↓
-                                                      SQL Analytics
-```
-
-> **Note:** Only Steps 1 (extraction) and 2 (transformation) are implemented.
-> S3, Glue, Athena, and analytics are planned for future stages.
+> **Note:** Steps 1–3 (Extract, Transform, Load) are implemented.
+> AWS Glue and Athena are planned for future stages.
 
 ---
 
@@ -77,6 +69,19 @@ analytics. Collections such as `suggestions`, `users`, and
 authentication-related data are **excluded** because they contain private or
 user-generated information that is not relevant to the data pipeline.
 
+## Why Amazon S3?
+
+S3 acts as the **cloud storage / data-lake layer** for this pipeline. It stores
+both the raw snapshot and processed datasets in a structured layout, making
+them available for downstream analytics services like AWS Glue and Athena.
+
+S3 is preferred over a traditional database for this use case because:
+
+- It stores files in any format (JSON, CSV, Parquet) without schema constraints.
+- It scales to any size and costs almost nothing for small datasets.
+- It integrates natively with AWS analytics services.
+- It separates storage from compute — you only pay for queries when you run them.
+
 ---
 
 ## Setup
@@ -86,6 +91,7 @@ user-generated information that is not relevant to the data pipeline.
 - [Node.js](https://nodejs.org/) ≥ 18 (for extraction)
 - [Python](https://python.org/) ≥ 3.10 (for transformation)
 - Access to the Firebase project `holy-way-9800e`
+- An AWS account (for S3 storage)
 
 ### 1. Clone the repository
 
@@ -147,6 +153,36 @@ python scripts/etl/transform.py
 This reads the raw snapshot, performs safe transformations, and produces
 analytics-friendly datasets in `processed/`.
 
+### Step 3 — Load (Processed Data → Amazon S3)
+
+The processed datasets and raw snapshot are uploaded to a **private** Amazon S3
+bucket via the AWS Management Console.
+
+**S3 Bucket:** `holyway-data-pipeline-holy-way-9800e`
+**Region:** `ap-south-2` (Hyderabad)
+
+S3 data-lake layout:
+
+```
+s3://holyway-data-pipeline-holy-way-9800e/
+│
+├── raw/
+│   └── churches/
+│       └── churches.json              ← Raw Firestore snapshot
+│
+└── processed/
+    ├── churches/
+    │   └── churches.csv               ← One row per church
+    ├── services/
+    │   └── services.csv               ← One row per service-language
+    └── quality/
+        └── data_quality_report.json   ← Data-quality metrics
+```
+
+> **Note:** The S3 bucket is private (Block Public Access = ON). No public
+> URLs are created. The upload is currently performed manually via the AWS
+> Console. Automated upload can be added in a future step.
+
 ---
 
 ## Output
@@ -165,6 +201,15 @@ analytics-friendly datasets in `processed/`.
 | `churches.csv`              | One row per church — flat, analytics-friendly      |
 | `services.csv`              | One row per service-language — flattened timings    |
 | `data_quality_report.json`  | Validation results and data-quality metrics         |
+
+### Cloud storage (Amazon S3)
+
+| S3 Key                                        | Source                    |
+| --------------------------------------------- | ------------------------- |
+| `raw/churches/churches.json`                   | Raw Firestore snapshot    |
+| `processed/churches/churches.csv`              | Processed church dataset  |
+| `processed/services/services.csv`              | Processed service dataset |
+| `processed/quality/data_quality_report.json`   | Data-quality report       |
 
 ---
 
@@ -255,6 +300,30 @@ Multi-language services are exploded into separate rows (one per language).
 - It does **not** perform fuzzy matching or deduplication of churches.
 - It does **not** guess or invent missing data.
 - It does **not** change factual church information.
+
+## Step 3: S3 Data Lake Details
+
+The processed datasets and raw snapshot are stored in Amazon S3 using a
+data-lake-style layout that separates `raw/` from `processed/` data.
+
+**Bucket configuration:**
+
+| Setting | Value |
+|---|---|
+| Bucket name | `holyway-data-pipeline-holy-way-9800e` |
+| Region | `ap-south-2` (Hyderabad) |
+| Block Public Access | ✅ Enabled (all public access blocked) |
+| Object Ownership | Bucket owner enforced |
+| Versioning | Disabled |
+| Encryption | SSE-S3 (default) |
+
+**Why this layout?**
+
+- `raw/` preserves the original Firestore data exactly as extracted — this is
+  the source of truth for the data lake and enables re-running transformations.
+- `processed/` contains clean, analytics-ready datasets that downstream services
+  (like AWS Glue and Athena) can query directly.
+- Separating raw and processed data is a core data-lake best practice.
 
 ---
 
