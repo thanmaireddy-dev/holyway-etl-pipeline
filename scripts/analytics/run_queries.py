@@ -58,8 +58,10 @@ def run_analytics():
     print("="*50 + "\n")
     
     # Execute and print each query
-    for title, query in queries:
-        print(f"--- {title} ---")
+    for i, (title, query) in enumerate(queries, 1):
+        title_str = f"Query {i}: {title}"
+        print(title_str)
+        print("-" * len(title_str))
         try:
             df = pd.read_sql_query(query, conn)
             if df.empty:

@@ -213,6 +213,7 @@ async function main() {
   console.log(`  Extraction complete: ${documents.length} document(s)`);
   console.log('───────────────────────────────────────────────────');
   console.log('');
+  process.exit(0);
 }
 
 main().catch((err) => {
