@@ -1,0 +1,40 @@
+{
+  "transformation_timestamp": "2026-08-17T16:49:45.057710+00:00",
+  "raw_document_count": 101,
+  "processed_church_count": 101,
+  "processed_service_count": 259,
+  "missing_values_by_field": {
+    "_firestoreId": 0,
+    "name": 0,
+    "denomination": 0,
+    "city": 0,
+    "churchType": 0,
+    "status": 0,
+    "archdiocese": 32,
+    "latitude": 71,
+    "longitude": 71,
+    "website": 0,
+    "phone": 1
+  },
+  "coordinates": {
+    "churches_with_coordinates": 30,
+    "churches_without_coordinates": 71,
+    "invalid_latitude_count": 0,
+    "invalid_longitude_count": 0
+  },
+  "duplicate_firestore_id_count": 0,
+  "churches_with_mass_timings": 97,
+  "churches_without_mass_timings": 4,
+  "service_validation": {
+    "missing_church_id": 0,
+    "missing_day": 0,
+    "missing_time": 1,
+    "missing_language": 4
+  },
+  "reconciliation": {
+    "raw_count": 101,
+    "processed_count": 101,
+    "difference": 0,
+    "note": "Counts match \u2014 no records lost or added."
+  }
+}
