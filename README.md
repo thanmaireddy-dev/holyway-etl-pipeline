@@ -29,15 +29,81 @@ Firebase Firestore (holy-way-9800e)
         ↓
   Processed CSV datasets (local)
         ↓
-  Step 3: Load → Amazon S3 (ap-south-2, Hyderabad)
+  Step 3: Load (Python + SQLite)
         ↓
-  [Next: AWS Glue Data Catalog]
+  Relational Database (holyway.db)
         ↓
-  [Later: Amazon Athena → SQL Analytics]
+  Step 4: Analyze (SQL)
 ```
 
-> **Note:** Steps 1–3 (Extract, Transform, Load) are implemented.
-> AWS Glue and Athena are planned for future stages.
+### Extract
+
+Read church data from Firestore and preserve it as a raw JSON snapshot.
+
+### Transform
+
+Clean, validate, and reshape the nested Firestore data into analytics-friendly datasets.
+
+### Load
+
+Load the processed datasets into a local SQLite relational database.
+
+### Analyze
+
+Use SQL queries to generate insights and identify data-quality issues.
+
+## Relational Model
+
+The SQLite database uses a simple relational model to allow for robust analytics.
+
+┌────────────────────┐
+│      churches      │
+├────────────────────┤
+│ church_id (PK)     │
+│ name               │
+│ denomination       │
+│ city               │
+│ ...                │
+└─────────┬──────────┘
+          │
+          │ 1
+          │
+          │ N
+          ▼
+┌────────────────────┐
+│      services      │
+├────────────────────┤
+│ service_id (PK)    │
+│ church_id (FK)     │
+│ day                │
+│ time               │
+│ language           │
+│ note               │
+└────────────────────┘
+
+*   **Primary Key (PK)**: `church_id` uniquely identifies each church.
+*   **Foreign Key (FK)**: `church_id` in the `services` table links each service back to its parent church.
+*   **One-to-Many Relationship**: One church can have many services (1:N). Flattening the nested Firestore `massTimings` structure into this relational format makes it easy to run SQL queries and perform analytics across the entire dataset.
+
+## Future AWS Architecture (Proposed)
+
+```
+Firebase Firestore
+        ↓
+  Raw Data
+        ↓
+  Python ETL
+        ↓
+  Amazon S3
+        ↓
+  AWS Glue Data Catalog
+        ↓
+  Amazon Athena
+        ↓
+  SQL Analytics
+```
+
+> **Note:** The cloud architecture involving Amazon S3, AWS Glue, and Amazon Athena is a proposed future state and is **not yet implemented**. Currently, the project uses a local SQLite database for the data warehouse layer.
 
 ---
 

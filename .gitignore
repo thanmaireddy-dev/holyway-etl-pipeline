@@ -16,3 +16,7 @@ node_modules/
 
 # Logs
 *.log
+
+# SQLite Database
+database/
+holyway.db
