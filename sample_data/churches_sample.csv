@@ -1,0 +1,6 @@
+_firestoreId,church_id,name,denomination,city,address,latitude,longitude,service_count
+"SAMPLE_DOC_1","C001","St. Mary's Basilica","Catholic","Secunderabad","Sarojini Devi Rd, Shivaji Nagar, Secunderabad",17.4399,78.5034,2
+"SAMPLE_DOC_2","C002","Calvary Temple","Pentecostal","Miyapur","Opposite Metro Station, Miyapur, Hyderabad",17.4950,78.3614,1
+"SAMPLE_DOC_3","C003","Centenary Methodist English Church","Methodist","Secunderabad","Chapel Rd, Abids, Hyderabad",17.3938,78.4735,2
+"SAMPLE_DOC_4","C004","CSI St. John's Church","CSI","Secunderabad","East Marredpally, Secunderabad",17.4475,78.5061,1
+"SAMPLE_DOC_5","C005","Centenary Baptist Church","Baptist","Secunderabad","St Marys Rd, Regimental Bazaar, Secunderabad",17.4357,78.5005,1

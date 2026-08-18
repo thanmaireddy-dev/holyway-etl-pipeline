@@ -1,0 +1,8 @@
+service_id,church_id,church_name,day,time,language,note
+"S001_1","C001","St. Mary's Basilica","Sunday","06:00 AM","English",""
+"S001_2","C001","St. Mary's Basilica","Sunday","07:15 AM","Telugu",""
+"S002_1","C002","Calvary Temple","Sunday","06:00 AM","Telugu","First service"
+"S003_1","C003","Centenary Methodist English Church","Sunday","08:00 AM","English",""
+"S003_2","C003","Centenary Methodist English Church","Sunday","10:00 AM","English",""
+"S004_1","C004","CSI St. John's Church","Sunday","09:30 AM","English",""
+"S005_1","C005","Centenary Baptist Church","Sunday","10:30 AM","Telugu",""

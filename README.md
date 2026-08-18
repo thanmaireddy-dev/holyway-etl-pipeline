@@ -1,41 +1,53 @@
 # HolyWay Data Engineering Pipeline
 
-A small ETL / data-engineering project built around the church-domain data used
-by the **HolyWay** mobile application.
+## 1. What is this project?
+A complete, local ETL (Extract, Transform, Load) data-engineering pipeline built around real church-domain data used by the **HolyWay** mobile application.
+
+## 2. Why was it built?
+To demonstrate how unstructured, nested NoSQL mobile app data can be reliably extracted, transformed, and loaded into a structured relational database for rigorous SQL analytics and business intelligence, all while maintaining data quality and a reproducible pipeline.
+
+## 3. What is the data source?
+The operational NoSQL database for the HolyWay app: **Firebase Firestore** (Project: `holy-way-9800e`, Collection: `churches`).
+
+## 4. What does the pipeline do?
+It extracts the raw JSON documents from Firestore, transforms and flattens them using Python and Pandas, validates the data integrity, loads the records into a relational SQLite database, and runs SQL analytical queries against the structured data.
+
+## 5. What technologies are actually used?
+*   **Node.js / Firebase Admin SDK**: Read-only extraction.
+*   **Python 3 / Pandas**: Data transformation, flattening nested structures, and orchestration.
+*   **SQLite / SQL**: Relational storage and data analytics.
+*   **Git**: Version control.
 
 ---
 
 ## Conceptual Architecture
 
-```
+```text
 Firebase Firestore (holy-way-9800e)
         ↓
-     Extract
+Node.js Extraction
         ↓
-    Raw JSON
+     Raw JSON
         ↓
  Python + Pandas
         ↓
 Transform + Validate
         ↓
- Processed CSV
+  Processed CSV
         ↓
-     SQLite
+      SQLite
         ↓
-   SQL Analytics
+  SQL Analytics
 ```
 
-### Extract
-The pipeline reads 101 church documents from the HolyWay Firestore database and creates a raw JSON snapshot.
+### 6. What data transformations occur?
+Python/Pandas cleans text formatting, handles missing values gracefully, and most importantly, "flattens" or "explodes" the deeply nested NoSQL `massTimings` dictionaries into a tabular format where each service time becomes its own row.
 
-### Transform
-Python/Pandas cleans formatting, validates values, and converts nested mass/service timing structures into analytics-friendly tabular records.
+### 7. What relational model is created? (See below)
+The processed datasets are loaded into a SQLite relational database containing normalized `churches` and `services` tables.
 
-### Load
-The processed datasets are loaded into a SQLite relational database containing `churches` and `services` tables.
-
-### Analyze
-SQL queries perform aggregation, filtering, joins, and data-quality analysis.
+### 8. What SQL analytics are performed?
+SQL queries perform aggregations (e.g., counting churches by denomination), filtering, joins (e.g., finding churches with the highest number of services), and data-quality analysis (e.g., finding service rows missing a language).
 
 ---
 
@@ -74,7 +86,7 @@ The SQLite database uses a simple relational model to allow for robust analytics
 
 ---
 
-## Setup & Execution
+## 10. How do I run it? (Setup & Execution)
 
 ### Prerequisites
 
@@ -119,17 +131,23 @@ python scripts/run_pipeline.py
 
 ---
 
-## Data Quality
+## 11. What are the current results? (Current Dataset Metrics)
 
-The pipeline performs automated data-quality validation. Actual findings from the current dataset include:
+The pipeline performs automated data-quality validation on every run. **Missing values are reported (as INFO or WARNING) rather than fabricated or silently discarded.**
 
-- **101** churches preserved
-- **259** service records
-- **0** orphan services
-- **71** churches missing coordinates
-- **4** churches without recorded services
-- **1** service missing time
-- **4** services missing language
+Actual findings from the current dataset include:
+
+*   **Source records**: 101
+*   **Processed churches**: 101
+*   **Service records**: 259
+*   **Orphan service records**: 0
+*   **Missing coordinates**: 71 churches
+*   **Churches without recorded services**: 4
+*   **Service rows missing time**: 1
+*   **Service rows missing language**: 4
+
+### 9. What data-quality issues were discovered?
+As seen in the metrics above, the primary data quality issues are missing geographical coordinates and occasional missing service details. The pipeline successfully catches these without dropping the valid portions of the records.
 
 ---
 
@@ -176,9 +194,11 @@ holyway-etl-pipeline/
 
 ---
 
-## Future Cloud Architecture
+## 12. What would the future AWS architecture look like? (Future Cloud Architecture)
 
 The current implementation is local and does not deploy the pipeline to AWS.
+
+**Not implemented in the current version.**
 
 A future cloud deployment could use:
 
